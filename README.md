@@ -1,10 +1,10 @@
 # 高中数理化生备课与解题方法库
 
-中文 | [English](README.en.md)
+中文 | [English](READMEen.md)
 
 面向中国高中数学、物理、化学、生物教学的 AI Agent 技能与解题方法库，主要用于一对一家教备课、题目讲解和方法整理。
 
-技能规定如何查资料、核对解法、组织教学与维护方法卡；方法库保存可复用的思路、适用条件、演算实例和来源。使用时，先识别题目条件与学生先修，再选择方法并核验具体解答。
+技能规定如何查资料、核对解法、组织教学与维护方法卡；方法库保存可复用的思路、适用条件、演算实例和核验状态。使用时，先识别题目条件与学生先修，再选择方法并核验具体解答。
 
 ## 可以做什么
 
@@ -20,34 +20,68 @@
 
 ## 核心文件
 
-技能文件夹名为 `high-school-lesson-prep`，入口是 `SKILL.md`。安装时保留整个文件夹及其相对目录关系。
+两个技能放在 `skills/` 下。备课技能以 `SKILL.md` 为入口，方法库随该技能一起保存。安装时保留文件夹内的相对目录关系。
 
 ```text
-high-school-lesson-prep/
-├── SKILL.md
-├── agents/
-│   └── openai.yaml
-├── workflows/
-│   ├── prepare-lesson.md
-│   ├── solve-question.md
-│   └── maintain-methods.md
-├── references/
-└── scripts/
-    └── question_bank.py
+skills/
+├── high-school-lesson-prep/
+│   ├── SKILL.md
+│   ├── agents/
+│   ├── workflows/
+│   ├── references/
+│   │   └── method-library/
+│   └── scripts/question_bank.py
+└── chinese-material-search/
+    ├── SKILL.md
+    ├── agents/
+    └── references/
 ```
 
-方法库以 `总索引.md` 为入口，正文按 `数学.md`、`物理.md`、`化学.md`、`生物.md` 分科保存，`方法条目与来源.json` 记录条目与来源信息。方法库可以与技能分开存放，但技能中的引用必须指向实际位置。
+方法库以 [index.md](skills/high-school-lesson-prep/references/method-library/index.md) 为入口，正文按 `mathematics.md`、`physics.md`、`chemistry.md`、`biology.md` 分科保存，`methods.json` 保存方法索引与状态。包内 JSON 中的文件定位相对方法库根目录；Markdown 中的内部链接使用相对路径及稳定方法 ID 锚点。
 
-## 安装与首次配置
+本包包含四科方法卡与索引，不包含出处、获取途径或阅读台账，也不包含按书提炼文件夹、候选笔记和原始教材。所有随包文件名使用英文，方法正文以中文为主。
 
-1. 下载或克隆仓库，将完整的 `high-school-lesson-prep` 文件夹放入所用 Agent 支持的技能目录。具体目录与加载方式以该 Agent 的说明为准。
-2. 将方法库放到计划长期维护的位置，检查技能中的方法库路径、题库路径及脚本调用路径。
-3. 在新会话中确认 Agent 能读取 `SKILL.md`、相关工作流和方法库总索引，再用一道已知答案的题目检查使用流程。
-4. 需要联网搜集资料时，配置宿主的搜索、浏览和文件工具。当前联网工作流引用 `chinese-material-search` 技能；请另行安装该依赖，或调整工作流以使用宿主可用的检索能力。
+## 通过 pip 安装
 
-**当前维护版仍包含作者本机路径与个人操作授权说明。** 换机使用前，请检查 `I:/卷/题`、`I:/卷/题/解题方法库` 以及 Python 和脚本的绝对路径，并按自己的环境修改。作者对下载、网盘操作和文件写入的既有授权不适用于其他使用者；请先明确自己的允许范围与保存位置。
+需要 Python 3.9 或以上版本和 pip。先下载并解压仓库，在包含 `pyproject.toml` 的目录打开 PowerShell，执行：
 
-本项目需要能读取文件并遵循技能说明的 AI Agent。运行 `question_bank.py` 需要 Python 3，脚本使用 Python 标准库。PDF 读取、OCR、联网搜索、符号计算和 Word/PDF 导出取决于宿主提供的工具；安装技能本身不会增加这些能力。
+```powershell
+python -m pip install .
+```
+
+pip 会准备 `pyproject.toml` 中的构建依赖；首次安装可能需要联网。技能安装器本身仅使用 Python 标准库。
+
+### 预览并安装到 Codex
+
+先查看安装计划，再执行安装：
+
+```powershell
+python -m lesson_prep_kit.install --dry-run
+python -m lesson_prep_kit.install
+```
+
+默认目录是当前用户的 `~/.codex/skills`；设置了 `CODEX_HOME` 时使用其中的 `skills` 子目录。安装器会复制备课技能、随包方法库和中文资料检索技能，保留两项技能的同级关系。预览不写文件，已有同名技能保持原样。
+
+如果 Python 的命令目录已在 PATH 中，也可以使用短命令 `lesson-prep-install`，参数相同。
+
+### 指定其它技能目录
+
+例如安装到共享技能目录：
+
+```powershell
+python -m lesson_prep_kit.install --target "$env:USERPROFILE\.agents\skills" --dry-run
+python -m lesson_prep_kit.install --target "$env:USERPROFILE\.agents\skills"
+```
+
+也可以把 `--target` 换成所用 Agent 支持的其它技能目录。安装器只复制本包的两项技能，不修改 Agent 配置。遇到文件、目录链接或不完整的同名目录时，会报告错误并保留原内容。安装失败时清理本次新建的技能目录。
+
+输出中的 `installed` 表示已复制并检查文件，`skipped-existing` 表示保留已有目录，`would-install` 表示预览中计划复制。
+
+### 安装后配置
+
+重新开启 Agent 会话，确认它能读取技能的 `SKILL.md` 与随包方法库 `references/method-library/index.md`。再用一道已知答案的题目检查使用流程；文件复制成功本身不能证明宿主已经加载技能。
+
+扫描自己的外部题库时，另行指定题库与索引目录；未配置外部题库时仍可使用随包方法库和用户给出的题目。联网搜索、PDF读取、OCR及Word/PDF导出取决于宿主提供的工具。下载、网盘操作和方法库写入遵守当前用户的授权与保存位置。
 
 ## 使用示例
 
@@ -67,7 +101,7 @@ high-school-lesson-prep/
 
 ## 方法卡与核验状态
 
-方法卡使用稳定 ID，并记录名称与别名、题型线索、适用条件、先修知识、关键步骤、演算与检查、失效情形，以及来源和实际阅读范围。
+方法卡使用稳定 ID，并记录名称与别名、题型线索、适用条件、先修知识、关键步骤、演算与检查、失效情形与核验状态。
 
 | 状态 | 含义 |
 | --- | --- |
@@ -82,14 +116,16 @@ high-school-lesson-prep/
 
 `scripts/question_bank.py` 按资料文件的路径、大小和修改时间建立增量索引，支持扫描与文件名、路径关键词搜索。它不读取全库正文，不逐题拆分，也不完成题目内容判重。
 
-首次扫描建立基线；后续扫描报告新增、修改和移除的文件。文件数量不等于题目数量。使用前可通过脚本的 `--help`、`scan --help` 和 `search --help` 查看参数，并显式指定自己的题库与状态目录。
+首次扫描建立基线；后续扫描报告新增、修改和移除的文件。文件数量不等于题目数量。使用前可通过脚本的 `--help`、`scan --help` 和 `search --help` 查看参数。扫描必须提供 `--root`、`--state-dir`，搜索必须提供同一 `--state-dir`。运行示例见 [本地题库说明](skills/high-school-lesson-prep/references/local-question-bank.md)。
 
 ## 更新与纠错
 
-补充方法时，保留来源及实际读取范围；发现错误时，给出对应 ID、题目条件、问题步骤与修正依据。涉及方法卡的修改，应同步检查学科正文、总索引和 JSON，保留已有 ID、历史来源与核验状态。
+补充方法时，保留适用条件、实例与核验状态；发现错误时，给出对应 ID、题目条件、问题步骤与修正依据。涉及方法卡的修改，应同步检查学科正文、总索引和 JSON，保留已有 ID 与核验状态。
 
 分享改动前，请移除学生个人信息、账号凭据和本机运行缓存。书籍、讲义与网页内容的使用和再分发，须遵守各自的许可；引用出处不等于取得整份资料的再分发权。
 
 ## 许可
 
-使用与再分发范围以仓库中的 `LICENSE` 为准；若仓库尚未提供许可证，请先联系作者确认授权。第三方资料及其摘录适用各自的权利与许可，不因收入本库而改变。
+本项目采用 MIT 许可证，允许在遵守许可证条款的前提下使用、复制、修改和分发。
+复制或分发本项目或其实质性部分时，应保留原始版权声明和许可证声明。本项目按“原样”提供，不提供任何明示或默示的担保。
+另有许可声明的第三方内容，遵循其各自的许可。

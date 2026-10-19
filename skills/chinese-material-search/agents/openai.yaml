@@ -1,0 +1,6 @@
+interface:
+  display_name: "中文资料检索"
+  short_description: "优先检索微信公众号，查找教学、大学课程与科研学习等中文资料，并核验正文及附件状态"
+  default_prompt: "使用 $chinese-material-search 按我的主题寻找中文资料，优先微信公众号，并说明用途、来源、正文读取范围与附件获取状态。"
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,6 @@
+interface:
+  display_name: "高中数理化生家教备课"
+  short_description: "高中数理化生备课、多方法讲题与方法库维护，核验解法、去重纠错并同步索引"
+  default_prompt: "使用 $high-school-lesson-prep 为我的高中家教备课、讲题，或从我的提示、指定PDF和参考答案中收录方法，通过工作流三核验、去重、补卡和同步索引；备课时自动归档相关资料并生成师生两版。"
+policy:
+  allow_implicit_invocation: true

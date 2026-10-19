@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lesson-prep-kit"
+version = "0.1.0"
+description = "Install lesson-preparation skills and their bundled method library."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+classifiers = ["Private :: Do Not Upload"]
+
+[project.scripts]
+lesson-prep-install = "lesson_prep_kit.install:main"
+
+[tool.setuptools]
+packages = ["lesson_prep_kit"]
+package-dir = {lesson_prep_kit = "."}
+include-package-data = false
+
+[tool.setuptools.package-data]
+lesson_prep_kit = ["skills/**/*.md", "skills/**/*.json", "skills/**/*.yaml", "skills/**/*.py"]
